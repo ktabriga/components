@@ -11,6 +11,7 @@ module.exports = function(config){
 			'bower_components/jquery/dist/jquery.min.js',
 			'bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js',
 			'bower_components/mousetrap-latest/mousetrap.min.js',
+			'bower_components/lodash/lodash.min.js',
 			'src/index.js',
 			'src/services/**/*.js',
 			'src/directives/**/*.js',

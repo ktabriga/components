@@ -15,7 +15,7 @@
       vm.selectedItem;
       vm.selectedItemDir;
       vm.$parent = $scope.$parent;
-
+      vm.selected = [];
 
       vm.sortProxy = sortProxy;
       vm.selectRow = selectRow;
@@ -87,11 +87,13 @@
       function cleanArrays(){
         $scope.$parent.selectedValues = [];
         vm.selectedIndexes = [];
+        vm.selected = [];
       }
 
       function pushToArrays(val,index){
         vm.selectedIndexes.push(index);
         $scope.$parent.selectedValues.push(findInOriginalArray(val));
+        vm.selected.push(val);
       }
 
       function setEveryCheckedToBoolean(bool){
@@ -117,31 +119,31 @@
         cleanValueAndArrays(vm.checkAll,vm.checkAll);
         if($attrs.onClick)vm.onClick({$value: ngRepeatValue});
         if(vm.config.selection == 'single'){
-          if(ngRepeatValue.__checked){
-            ngRepeatValue.__checked = false;
-            cleanArrays();
-          } else {
-            cleanValueAndArrays(vm.selectedIndexes.length > 0)
-            pushToArrays(ngRepeatValue,ngRepeatIndex);
-            ngRepeatValue.__checked = true;
-          }
+          singleSelection(ngRepeatValue, ngRepeatIndex);
         } else {
-          ngRepeatValue.__checked = vm.selectedIndexes.filter(function(val){return val == ngRepeatIndex}).length < 1;
-          if((ngRepeatValue.__checked) || vm.selectedIndexes.length == 0 ){
-            pushToArrays(ngRepeatValue,ngRepeatIndex);
-            return 0;
-          }
-          var indexOfValueSelected;
-          var auxiliarObject = angular.copy(ngRepeatValue);
-          delete auxiliarObject.__checked;
-          selectedValues.forEach(function(val,indx){
-            if(angular.equals(val, auxiliarObject)){
-              indexOfValueSelected = indx;
-            }
-          })
-          selectedValues.splice(indexOfValueSelected, 1);
-          vm.selectedIndexes.splice(vm.selectedIndexes.indexOf(ngRepeatIndex) ,1);
+          multiSelection(ngRepeatValue, ngRepeatIndex, selectedValues)
         }
+      }
+
+      function singleSelection(ngRepeatValue, ngRepeatIndex) {
+        cleanValueAndArrays(vm.selectedIndexes.length > 0);
+        !ngRepeatValue.__checked && pushToArrays(ngRepeatValue, ngRepeatIndex);
+        ngRepeatValue.__checked = !ngRepeatValue.__checked;
+        vm.selected = ngRepeatValue.__checked ? ngRepeatValue : undefined;
+      }
+
+      function multiSelection(ngRepeatValue, ngRepeatIndex, selectedValues) {
+        ngRepeatValue.__checked = !_.contains(vm.selectedIndexes, ngRepeatIndex);
+
+        if(ngRepeatValue.__checked || _.isEmpty(vm.selectedIndexes)){
+          pushToArrays(ngRepeatValue, ngRepeatIndex);
+          return 0;
+        }
+
+        var indexOfValueSelected = selectedValues.indexOf(ngRepeatValue);
+        selectedValues.splice(indexOfValueSelected, 1);
+        vm.selectedIndexes.splice(vm.selectedIndexes.indexOf(ngRepeatIndex) ,1);
+        vm.selected.splice(indexOfValueSelected, 1);
       }
 
       function sortProxy(field){
@@ -188,6 +190,7 @@
     return {
       restrict: 'E',
       scope:{
+        'selected': '=',
         'sort': '&?',
         'data': '=',
         'onClick': '&?',

@@ -29,7 +29,7 @@ describe('DIRECTIVE: GumgaList',function () {
         scope.arrayList = getData(100);
         scope.configz = {};
         scope.configz.columns = 'name,age,profession,hasDog';
-        var element = angular.element('<gumga-list data="arrayList" configuration="configz" sort="sort(field,dir)"></gumga-list>');
+        var element = angular.element('<gumga-list selected="selectedModel" data="arrayList" configuration="configz" sort="sort(field,dir)"></gumga-list>');
         $compile(element)(scope);
         controller = element.controller('gumgaList');
         scope.sort = function(field,dir){};
@@ -99,6 +99,51 @@ describe('DIRECTIVE: GumgaList',function () {
       expect(controller.selectedIndexes[2]).toEqual(4);
     })
 
+
+    it('Should select only one row at time in selected',function(){
+      controller.config.selection = 'single';
+      controller.selectRow(0,controller.data[0],{target: {}});
+      delete controller.data[0].__checked;
+      expect(controller.selected).toEqual(controller.data[0]);
+      expect(controller.selectedIndexes[0]).toEqual(0);
+      controller.selectRow(1,controller.data[1],{target: {}});
+      expect(controller.selectedIndexes[0]).toEqual(1);
+      delete controller.data[1].__checked;
+      expect(controller.selected).toEqual(controller.data[1]);
+    })
+
+
+    it('Should select more than one row at time in selected',function(){
+      controller.config.selection = 'multi';
+      controller.selectRow(0,controller.data[0],{target: {}});
+      controller.selectRow(1,controller.data[1],{target: {}});
+      controller.selectRow(4,controller.data[4],{target: {}});
+      expect(controller.selected[0]).toEqual(controller.data[0]);
+      expect(controller.selected[1]).toEqual(controller.data[1]);
+      expect(controller.selected[2]).toEqual(controller.data[4]);
+    })
+
+    it('Should remove item from selected',function(){
+      controller.config.selection = 'multi';
+      controller.selectRow(0,controller.data[0],{target: {}});
+      controller.selectRow(1,controller.data[1],{target: {}});
+      controller.selectRow(4,controller.data[4],{target: {}});
+      expect(controller.selected[0]).toEqual(controller.data[0]);
+      expect(controller.selected[1]).toEqual(controller.data[1]);
+      expect(controller.selected[2]).toEqual(controller.data[4]);
+    })
+
+    it('Should unselect item from selected',function(){
+      controller.config.selection = 'multi';
+      controller.selectRow(0,controller.data[0],{target: {}});
+      controller.selectRow(1,controller.data[1],{target: {}});
+      controller.selectRow(1,controller.data[1],{target: {}});
+      controller.selectRow(4,controller.data[4],{target: {}});
+      expect(controller.selected[0]).toEqual(controller.data[0]);
+      expect(controller.selected[1]).toEqual(controller.data[4]);
+      expect(controller.selected[2]).toBeUndefined();
+
+    })
   })
 
 

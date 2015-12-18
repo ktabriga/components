@@ -17,6 +17,7 @@ O componente gumgaList foi criado no intuito de substituir a gumgaTable. A parti
 ### Atributos
 
 - **`sort`:** Atributo *opcional* que irá conter uma função que será chamada quando o usuário clicar no título da tabela. Os parâmetros desta função necessitam obrigatóriamente ser: **field** e **dir**, como por exemplo: `sort="sortFunction(field,dir)"`.
+- **`selected`:** Atributo *opcional* que irá conter o item selecionado caso seleção única, ou todos os itens selecionados na multi-seleção"`.
 - **`class`:** Atributo *opcional* que irá conter uma string que será utilizada para adicionar classes a mais no componente. Por padrão, apenas a classe `table` é utilizada.
 - **`data`:** Atributo *obrigatório*  que irá conter um array com o qual os dados serão mostrados na tabela.
 - **`configuration`:** Atributo *obrigatório*  que irá conter um objeto com o qual os dados serão formatados para montar a tabela.
